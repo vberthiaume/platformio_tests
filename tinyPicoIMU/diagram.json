@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "author": "Vincent Berthiaume",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-tinypico",
+      "id": "esp",
+      "top": -378.5,
+      "left": -50,
+      "rotate": 270,
+      "attrs": {}
+    },
+    { "type": "wokwi-mpu6050", "id": "imu1", "top": -149.78, "left": -64.88, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "imu1:GND", "esp:GND.1", "black", [ "v-28.8", "h28.88", "v-115.2" ] ],
+    [ "imu1:SCL", "esp:26", "cyan", [ "v-57.6", "h-28.72", "v-86.4" ] ],
+    [ "imu1:SDA", "esp:25", "violet", [ "v-48", "h-28.72", "v-96" ] ],
+    [ "imu1:VCC", "esp:3V3", "red", [ "v-19.2", "h0.08", "v-124.8" ] ]
+  ],
+  "dependencies": {}
+}
