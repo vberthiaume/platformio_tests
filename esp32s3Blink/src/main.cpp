@@ -45,7 +45,7 @@ void setup()
   tft.print("Hello World!\n");
 
   //=== init BNO IMU ===
-  if (!bno.begin())
+  if (!bno.begin(OPERATION_MODE_IMUPLUS))
   {
     /* There was a problem detecting the BNO055 ... check your connections */
     Serial.println("No BNO055 detected... Check your wiring or I2C ADDR!");
