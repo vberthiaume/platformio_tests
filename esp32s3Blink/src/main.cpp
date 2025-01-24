@@ -17,7 +17,7 @@ void setup()
   // while (! Serial)
   //   delay(10);
 
-  //turn on the led
+  // turn on the led
 #if defined(NEOPIXEL_POWER)
   pinMode(NEOPIXEL_POWER, OUTPUT);
   digitalWrite(NEOPIXEL_POWER, HIGH);
@@ -30,31 +30,44 @@ void setup()
   pinMode(TFT_BACKLITE, OUTPUT);
   digitalWrite(TFT_BACKLITE, HIGH);
 
-  tft.init(135, 240);             // Init ST7789 240x135
-  tft.setRotation(3);             // rotates the screen
-  tft.fillScreen(ST77XX_BLACK);   // fills the screen with black colour
-  tft.setCursor(10, 10);          // starts to write text at y10 x10
+  tft.init(135, 240);               // Init ST7789 240x135
+  tft.setRotation(3);               // rotates the screen
+  tft.fillScreen(ST77XX_BLACK);     // fills the screen with black colour
+  tft.setCursor(10, 10);            // starts to write text at y10 x10
   tft.setTextColor(ST77XX_MAGENTA); // text colour to white you can use hex codes like 0xDAB420 too
-  tft.setTextSize(3);             // sets font size
+  tft.setTextSize(3);               // sets font size. 1 is default 6x8, 2 is 12x16, 3 is 18x24, etc
   tft.setTextWrap(true);
   tft.print("LAURA & ZOEY\n");
   tft.setTextSize(2); // sets font size
   tft.print("sont des patates!");
 }
 
-// the loop routine runs over and over again forever:
+// array of colors to cycle through
+uint32_t colors[] = {
+    pixels.Color(255, 0, 0),     // Red
+    pixels.Color(0, 255, 0),     // Green
+    pixels.Color(0, 0, 255),     // Blue
+    pixels.Color(255, 255, 0),   // Yellow
+    pixels.Color(0, 255, 255),   // Cyan
+    pixels.Color(255, 0, 255),   // Magenta
+    pixels.Color(255, 255, 255), // White
+    pixels.Color(128, 0, 128)    // Purple
+};
+
 void loop()
 {
-  // say hi
-  Serial.println("Hello!");
-
-  // set color to red
-  pixels.fill(ST77XX_MAGENTA);
-  pixels.show();
-  delay(500); // wait half a second
+  // cycle through colors
+  for (int i = 0; i < 8; i++)
+  {
+    pixels.fill(colors[i]);
+    pixels.show();
+    delay(500); // wait half a second
+  }
 
   // turn off
   pixels.fill(0x000000);
   pixels.show();
   delay(500); // wait half a second
+
+  Serial.print(".");
 }
