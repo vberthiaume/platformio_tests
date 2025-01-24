@@ -1,23 +1,28 @@
+// ======== neopixel led ========
 #include <Adafruit_NeoPixel.h>
+#define NUMPIXELS 1
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
+
+// ======== tft screen ========
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
-
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
-// How many internal neopixels do we have? some boards have more than one!
-#define NUMPIXELS 1
-
-Adafruit_NeoPixel pixels(NUMPIXELS, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
+// ======== BNO IMU ========
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
+Adafruit_BNO055 bno = Adafruit_BNO055();
 
 // the setup routine runs once when you press reset:
 void setup()
 {
   Serial.begin(115200);
-  // this is to wait for the serial monitor!
-  // while (! Serial)
-  //   delay(10);
+  while (! Serial)
+    delay(10);//wait for serial monitor to open
 
-  // turn on the led
+  //=== init the neopixel led ===
 #if defined(NEOPIXEL_POWER)
   pinMode(NEOPIXEL_POWER, OUTPUT);
   digitalWrite(NEOPIXEL_POWER, HIGH);
@@ -26,7 +31,7 @@ void setup()
   pixels.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   pixels.setBrightness(20); // not so bright
 
-  // turn on the tft backlight
+  //=== turn on and init the tft screen ===
   pinMode(TFT_BACKLITE, OUTPUT);
   digitalWrite(TFT_BACKLITE, HIGH);
 
@@ -37,9 +42,21 @@ void setup()
   tft.setTextColor(ST77XX_MAGENTA); // text colour to white you can use hex codes like 0xDAB420 too
   tft.setTextSize(3);               // sets font size. 1 is default 6x8, 2 is 12x16, 3 is 18x24, etc
   tft.setTextWrap(true);
-  tft.print("LAURA & ZOEY\n");
-  tft.setTextSize(2); // sets font size
-  tft.print("sont des patates!");
+  tft.print("Hello World!\n");
+
+  //=== init BNO IMU ===
+  if (!bno.begin())
+  {
+    /* There was a problem detecting the BNO055 ... check your connections */
+    Serial.println("No BNO055 detected... Check your wiring or I2C ADDR!");
+    while (1)
+      ;
+  }
+
+  delay(1000);
+
+  bno.setExtCrystalUse(true);
+  Serial.println("setup completed successfully");
 }
 
 // array of colors to cycle through
@@ -54,20 +71,28 @@ uint32_t colors[] = {
     pixels.Color(128, 0, 128)    // Purple
 };
 
+int i = -1;
 void loop()
 {
-  // cycle through colors
-  for (int i = 0; i < 8; i++)
-  {
-    pixels.fill(colors[i]);
-    pixels.show();
-    delay(500); // wait half a second
-  }
+  //have the led cycle through the colors
+  if (++i == 8)
+    i = 0;
 
-  // turn off
-  pixels.fill(0x000000);
+  pixels.fill(colors[i]);
   pixels.show();
-  delay(500); // wait half a second
 
-  Serial.print(".");
+  /* Get a new sensor event */
+  sensors_event_t event;
+  bno.getEvent(&event);
+
+  /* Display the floating point data */
+  Serial.print("X: ");
+  Serial.print(event.orientation.x, 4);
+  Serial.print("\tY: ");
+  Serial.print(event.orientation.y, 4);
+  Serial.print("\tZ: ");
+  Serial.print(event.orientation.z, 4);
+  Serial.println("");
+
+  delay(100);
 }
