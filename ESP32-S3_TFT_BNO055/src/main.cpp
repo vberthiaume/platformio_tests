@@ -2,11 +2,12 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+GFXcanvas16 canvas(240, 135);
 
 // ======== BNO IMU ========
-#include <Wire.h>
-#include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
+#include <Adafruit_Sensor.h>
+#include <Wire.h>
 #include <utility/imumaths.h>
 Adafruit_BNO055 bno = Adafruit_BNO055();
 
@@ -18,11 +19,8 @@ void setup()
   //=== turn on and init the tft screen ===
   pinMode(TFT_BACKLITE, OUTPUT);
   digitalWrite(TFT_BACKLITE, HIGH);
-  tft.init(135, 240);               // Init ST7789 240x135
-  tft.fillScreen(ST77XX_BLACK);     // Clear the screen
-  tft.setRotation(3);               // rotates the screen
-  tft.setTextColor(ST77XX_MAGENTA); // text colour to white you can use hex codes like 0xDAB420 too
-  tft.setTextSize(3);               // sets font size. 1 is default 6x8, 2 is 12x16, 3 is 18x24, etc
+  tft.init(135, 240); // Init ST7789 240x135
+  tft.setRotation(3); // rotates the screen
 
   //=== init BNO IMU ===
   if (!bno.begin(OPERATION_MODE_IMUPLUS))
@@ -46,14 +44,20 @@ void loop()
   bno.getEvent(&event);
 
   /* Display the floating point data */
-  tft.fillScreen(ST77XX_BLACK); // Clear the screen
-  tft.setCursor(0, 10);
-  tft.print("X: ");
-  tft.print(event.orientation.x, 4);
-  tft.print("\nY: ");
-  tft.print(event.orientation.y, 4);
-  tft.print("\nZ: ");
-  tft.print(event.orientation.z, 4);
-  tft.println("");
-  delay(200);
+  canvas.fillScreen(ST77XX_BLACK);
+  canvas.setCursor(0, 10);
+  canvas.setTextColor(ST77XX_MAGENTA);
+  canvas.setTextSize(3);
+  canvas.print("X: ");
+  canvas.print(event.orientation.x, 4);
+  canvas.setTextColor(ST77XX_WHITE);
+  canvas.print("\nY: ");
+  canvas.print(event.orientation.y, 4);
+  canvas.setTextColor(ST77XX_CYAN);
+  canvas.print("\nZ: ");
+  canvas.print(event.orientation.z, 4);
+  canvas.println("");
+
+  tft.drawRGBBitmap(0, 0, canvas.getBuffer(), 240, 135);
+  delay(10);
 }
