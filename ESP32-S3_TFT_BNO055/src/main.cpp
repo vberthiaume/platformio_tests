@@ -1,3 +1,17 @@
+#define WOKWI 1
+
+#if WOKWI
+// only required for wokwi
+#define TFT_CS 7
+#define TFT_RST 40
+#define TFT_DC 39
+#define TFT_BACKLITE 45
+#define esp32s3_SDA 42
+#define esp32s3_SCL 41
+
+#include <Adafruit_MPU6050.h>
+Adafruit_MPU6050 mpu;
+#else
 // ======== tft screen ========
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
@@ -10,12 +24,27 @@ GFXcanvas16 canvas(240, 135);
 #include <Wire.h>
 #include <utility/imumaths.h>
 Adafruit_BNO055 bno = Adafruit_BNO055();
+#endif
 
 // the setup routine runs once when you press reset:
 void setup()
 {
   Serial.begin(115200);
 
+#if WOKWI
+  Wire.setPins(esp32s3_SDA, esp32s3_SCL);
+  Wire.begin();
+  if (!mpu.begin())
+  {
+    Serial.println("Failed to find MPU6050 chip");
+    while (1)
+      delay(10);
+  }
+
+  mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+  mpu.setGyroRange(MPU6050_RANGE_250_DEG);
+  mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+#else
   //=== turn on and init the tft screen ===
   pinMode(TFT_BACKLITE, OUTPUT);
   digitalWrite(TFT_BACKLITE, HIGH);
@@ -30,16 +59,29 @@ void setup()
     while (1)
       ;
   }
+  bno.setExtCrystalUse(true);
 
   delay(1000);
+#endif
 
-  bno.setExtCrystalUse(true);
   Serial.println("setup completed successfully");
 }
 
 void loop()
 {
   /* Get a new sensor event */
+#if WOKWI
+  sensors_event_t a, g, temp;
+  mpu.getEvent(&a, &g, &temp);
+
+  Serial.print("X: ");
+  Serial.print(a.acceleration.x);
+  Serial.print("\nY: ");
+  Serial.print(a.acceleration.y);
+  Serial.print("\nZ: ");
+  Serial.print(a.acceleration.z);
+  Serial.println("");
+#else
   sensors_event_t event;
   bno.getEvent(&event);
 
@@ -59,5 +101,6 @@ void loop()
   canvas.println("");
 
   tft.drawRGBBitmap(0, 0, canvas.getBuffer(), 240, 135);
+#endif
   delay(10);
 }
