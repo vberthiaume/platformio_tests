@@ -28,14 +28,14 @@
     [ "imu1:VCC", "esp:3V3.1", "red", [ "v19.2", "h-38.48" ] ],
     [ "imu1:GND", "esp:GND.2", "black", [ "v307.2", "h-48.08" ] ],
     [ "lcd1:GND", "esp:GND.1", "black", [ "v19.2", "h-38.4" ] ],
-    [ "imu1:SCL", "esp:4", "cyan", [ "v28.8", "h-86.48" ] ],
-    [ "imu1:SDA", "esp:5", "magenta", [ "v38.4", "h-115.28" ] ],
     [ "lcd1:LED", "esp:3V3.1", "red", [ "v28.8", "h105.59" ] ],
     [ "lcd1:CS", "esp:7", "violet", [ "v57.6", "h96" ] ],
     [ "lcd1:MOSI", "esp:11", "green", [ "v67.2", "h-38.41" ] ],
     [ "lcd1:SCK", "esp:12", "green", [ "v76.8", "h-57.61" ] ],
     [ "lcd1:MISO", "esp:13", "green", [ "v86.4", "h-76.81", "v9.6" ] ],
-    [ "esp:39", "lcd1:D/C", "green", [ "v28.8", "h-172.8", "v-316.8", "h115.2" ] ]
+    [ "esp:39", "lcd1:D/C", "green", [ "v28.8", "h-172.8", "v-316.8", "h115.2" ] ],
+    [ "esp:42", "imu1:SDA", "cyan", [ "v28.8", "h115.2", "v-316.8" ] ],
+    [ "imu1:SCL", "esp:41", "magenta", [ "v326.4", "h-115.28" ] ]
   ],
   "dependencies": {}
 }

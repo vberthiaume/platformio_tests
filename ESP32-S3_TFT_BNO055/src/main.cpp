@@ -1,3 +1,18 @@
+// Only the `WOKWI-esp32-s3-devkitc-1` env will build with WOKWI == 1
+#define WOKWI 0
+
+#if WOKWI
+#define TFT_CS 7
+#define TFT_RST 40
+#define TFT_DC 39
+#define TFT_BACKLITE 45
+#define esp32s3_SDA 42
+#define esp32s3_SCL 41
+
+#include <Adafruit_MPU6050.h>
+Adafruit_MPU6050 mpu;
+#endif
+
 // ======== tft screen ========
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
@@ -16,6 +31,21 @@ void setup()
 {
   Serial.begin(115200);
 
+#if WOKWI
+  Wire.setPins(esp32s3_SDA, esp32s3_SCL);
+  Wire.begin();
+  if (!mpu.begin())
+  {
+    Serial.println("Failed to find MPU6050 chip");
+    while (1)
+      delay(10);
+  }
+
+  mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+  mpu.setGyroRange(MPU6050_RANGE_250_DEG);
+  mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+#else
+
   //=== turn on and init the tft screen ===
   pinMode(TFT_BACKLITE, OUTPUT);
   digitalWrite(TFT_BACKLITE, HIGH);
@@ -30,16 +60,28 @@ void setup()
     while (1)
       ;
   }
+  bno.setExtCrystalUse(true);
+#endif
 
   delay(1000);
-
-  bno.setExtCrystalUse(true);
   Serial.println("setup completed successfully");
 }
 
 void loop()
 {
   /* Get a new sensor event */
+#if WOKWI
+  sensors_event_t a, g, temp;
+  mpu.getEvent(&a, &g, &temp);
+
+  Serial.print("XX: ");
+  Serial.print(a.acceleration.x);
+  Serial.print("\nYY: ");
+  Serial.print(a.acceleration.y);
+  Serial.print("\nZZ: ");
+  Serial.print(a.acceleration.z);
+  Serial.println("");
+#else
   sensors_event_t event;
   bno.getEvent(&event);
 
@@ -48,16 +90,18 @@ void loop()
   canvas.setCursor(0, 10);
   canvas.setTextColor(ST77XX_MAGENTA);
   canvas.setTextSize(3);
-  canvas.print("X: ");
+  canvas.print("XX: ");
   canvas.print(event.orientation.x, 4);
   canvas.setTextColor(ST77XX_WHITE);
-  canvas.print("\nY: ");
+  canvas.print("\nYY: ");
   canvas.print(event.orientation.y, 4);
   canvas.setTextColor(ST77XX_CYAN);
-  canvas.print("\nZ: ");
+  canvas.print("\nZZ: ");
   canvas.print(event.orientation.z, 4);
   canvas.println("");
 
   tft.drawRGBBitmap(0, 0, canvas.getBuffer(), 240, 135);
+#endif
+
   delay(10);
 }
