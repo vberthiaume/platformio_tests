@@ -5,8 +5,12 @@ String fileContent;
 void setup()
 {
   Serial.begin(115200);
+  while (! Serial)
+  {
+    //wait for serial monitoring
+  }
 
-  if (!SPIFFS.begin(true))
+  if (!SPIFFS.begin())
   {
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
@@ -27,5 +31,8 @@ void setup()
 
 void loop()
 {
-  Serial.println(fileContent);
+  if (! fileContent.isEmpty())
+    Serial.println(fileContent);
+  else
+    Serial.println("couldn't read the file!!");
 }
