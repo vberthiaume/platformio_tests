@@ -4,14 +4,11 @@
 #define LED_PIN 25 // Pin connected to the LED anode
 
 TinyPICO tp;
+String fileContent;
 
 void setup()
 {
   Serial.begin(115200);
-  // while (! Serial)
-  // {
-  //   ; // wait for Serial to become active
-  // }
 
   if (!SPIFFS.begin(true))
   {
@@ -26,9 +23,8 @@ void setup()
     return;
   }
 
-  Serial.println("File Content:");
   while (file.available())
-    Serial.write(file.read());
+    fileContent += (char)file.read();
 
   file.close();
 
@@ -50,5 +46,5 @@ void loop()
   delay(250); // Keep it off for 1 second
 
   tp.DotStar_CycleColor(10);
-  Serial.println("ducoup");
+  Serial.println(fileContent);
 }
