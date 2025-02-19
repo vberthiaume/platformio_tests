@@ -33,6 +33,4 @@ void loop()
 {
   if (! fileContent.isEmpty())
     Serial.println(fileContent);
-  else
-    Serial.println("couldn't read the file!!");
 }

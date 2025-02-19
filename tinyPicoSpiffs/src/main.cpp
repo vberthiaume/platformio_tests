@@ -27,5 +27,8 @@ void setup()
 
 void loop()
 {
-  Serial.println(fileContent);
+  if (! fileContent.isEmpty())
+      Serial.println(fileContent);
+  else
+    Serial.println("couldn't read from text.txt!");
 }
