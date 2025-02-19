@@ -1,5 +1,6 @@
 // Only the `WOKWI-esp32-s3-devkitc-1` env will build with WOKWI == 1
 #define WOKWI 0
+#define SPIFFS 0  //only enabled if WOKWI != 1
 
 #if WOKWI
 #define TFT_CS 7
@@ -11,6 +12,8 @@
 
 #include <Adafruit_MPU6050.h>
 Adafruit_MPU6050 mpu;
+#elif SPIFFS
+#include "SPIFFS.h"
 #endif
 
 // ======== tft screen ========
@@ -61,6 +64,32 @@ void setup()
       ;
   }
   bno.setExtCrystalUse(true);
+
+#if ! WOKWI && SPIFFS
+  while (!Serial)
+  {
+    // wait for Serial to become active
+  }
+
+  if (!SPIFFS.begin(true))
+  {
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    return;
+  }
+
+  File file = SPIFFS.open("/text.txt");
+  if (!file)
+  {
+    Serial.println("Failed to open file for reading");
+    return;
+  }
+
+  Serial.println("File Content:");
+  while (file.available())
+    Serial.write(file.read());
+
+  file.close();
+#endif
 #endif
 
   delay(1000);
@@ -74,29 +103,32 @@ void loop()
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
 
-  Serial.print("XX: ");
+  Serial.print("X: ");
   Serial.print(a.acceleration.x);
-  Serial.print("\nYY: ");
+  Serial.print("\nY: ");
   Serial.print(a.acceleration.y);
-  Serial.print("\nZZ: ");
+  Serial.print("\nZ: ");
   Serial.print(a.acceleration.z);
   Serial.println("");
 #else
   sensors_event_t event;
   bno.getEvent(&event);
+#if SPIFFS
+  Serial.print("DUCOUP");
+#endif
 
   /* Display the floating point data */
   canvas.fillScreen(ST77XX_BLACK);
   canvas.setCursor(0, 10);
   canvas.setTextColor(ST77XX_MAGENTA);
   canvas.setTextSize(3);
-  canvas.print("XX: ");
+  canvas.print("X: ");
   canvas.print(event.orientation.x, 4);
   canvas.setTextColor(ST77XX_WHITE);
-  canvas.print("\nYY: ");
+  canvas.print("\nY: ");
   canvas.print(event.orientation.y, 4);
   canvas.setTextColor(ST77XX_CYAN);
-  canvas.print("\nZZ: ");
+  canvas.print("\nZ: ");
   canvas.print(event.orientation.z, 4);
   canvas.println("");
 
