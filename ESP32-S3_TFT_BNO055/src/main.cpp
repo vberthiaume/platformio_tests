@@ -1,6 +1,5 @@
 // Only the `WOKWI-esp32-s3-devkitc-1` env will build with WOKWI == 1
 #define WOKWI 0
-#define SPIFFS 0  //only enabled if WOKWI != 1
 
 #if WOKWI
 #define TFT_CS 7
@@ -12,8 +11,6 @@
 
 #include <Adafruit_MPU6050.h>
 Adafruit_MPU6050 mpu;
-#elif SPIFFS
-#include "SPIFFS.h"
 #endif
 
 // ======== tft screen ========
@@ -48,7 +45,6 @@ void setup()
   mpu.setGyroRange(MPU6050_RANGE_250_DEG);
   mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
 #else
-
   //=== turn on and init the tft screen ===
   pinMode(TFT_BACKLITE, OUTPUT);
   digitalWrite(TFT_BACKLITE, HIGH);
@@ -64,32 +60,6 @@ void setup()
       ;
   }
   bno.setExtCrystalUse(true);
-
-#if ! WOKWI && SPIFFS
-  while (!Serial)
-  {
-    // wait for Serial to become active
-  }
-
-  if (!SPIFFS.begin(true))
-  {
-    Serial.println("An Error has occurred while mounting SPIFFS");
-    return;
-  }
-
-  File file = SPIFFS.open("/text.txt");
-  if (!file)
-  {
-    Serial.println("Failed to open file for reading");
-    return;
-  }
-
-  Serial.println("File Content:");
-  while (file.available())
-    Serial.write(file.read());
-
-  file.close();
-#endif
 #endif
 
   delay(1000);
@@ -113,9 +83,6 @@ void loop()
 #else
   sensors_event_t event;
   bno.getEvent(&event);
-#if SPIFFS
-  Serial.print("DUCOUP");
-#endif
 
   /* Display the floating point data */
   canvas.fillScreen(ST77XX_BLACK);
