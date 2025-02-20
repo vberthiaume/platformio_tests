@@ -1,13 +1,19 @@
 #include "SPIFFS.h"
 
 String fileContent;
+#include <iostream>
 
 void setup()
 {
   Serial.begin(115200);
-
-  if (!SPIFFS.begin(true))
+  while (!Serial)
   {
+    // wait for serial monitoring
+  }
+
+  if (!SPIFFS.begin())
+  {
+    std::cout << "An Error has occurred while mounting SPIFFS, printed using std::cout" << std::endl;
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
@@ -27,8 +33,13 @@ void setup()
 
 void loop()
 {
-  if (! fileContent.isEmpty())
-      Serial.println(fileContent);
+  if (!fileContent.isEmpty())
+  {
+    std::cout << "fileContent printed with std::cout: " << fileContent.c_str() << std::endl;
+    Serial.println(fileContent);
+  }
   else
-    Serial.println("couldn't read from text.txt!");
+  {
+    std::cout << "couldn't open the file";
+  }
 }
