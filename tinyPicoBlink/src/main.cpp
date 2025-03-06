@@ -5,6 +5,7 @@
 */
 
 #include <TinyPICO.h>
+#include <iostream>
 
 #define LED_PIN 25 // Pin connected to the LED anode
 
@@ -33,4 +34,5 @@ void loop()
 
   tp.DotStar_CycleColor(25);
   Serial.println("ducoup");
+  std::cout << "ducoup cout\n";
 }
