@@ -6,22 +6,19 @@ String fileContent;
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial)
-  {
-    // wait for serial monitoring
-  }
+  delay(10000);
+  Serial.println("delay done!");
 
   if (!SPIFFS.begin())
   {
-    std::cout << "An Error has occurred while mounting SPIFFS, printed using std::cout" << std::endl;
-    Serial.println("An Error has occurred while mounting SPIFFS");
+    Serial.println("SPIFFS.begin() failed");
     return;
   }
 
   File file = SPIFFS.open("/text.txt");
   if (!file)
   {
-    Serial.println("Failed to open file for reading");
+    Serial.println("Failed to open text.txt");
     return;
   }
 
@@ -34,12 +31,7 @@ void setup()
 void loop()
 {
   if (!fileContent.isEmpty())
-  {
-    std::cout << "fileContent printed with std::cout: " << fileContent.c_str() << std::endl;
     Serial.println(fileContent);
-  }
   else
-  {
-    std::cout << "couldn't open the file";
-  }
+    Serial.println("could not read file");
 }
