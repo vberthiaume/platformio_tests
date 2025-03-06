@@ -5,15 +5,19 @@
 #include <puara/gestures.h>
 
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
-
 Adafruit_NeoPixel pixels(1, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
-
-puara_gestures::Brush button;
 
 // the setup routine runs once when you press reset:
 void setup()
 {
   Serial.begin(115200);
+
+  puara_gestures::Brush brush;
+  brush.reset();
+  IMU_Orientation imu_orientation;
+  imu_orientation.setAccelerometerValues({}, {}, {});
+  // imu_orientation.setGyroscopeDegreeValues({}, {}, {}, {});
+  // imu_orientation.update();
 
   // turn on the led
   pinMode(NEOPIXEL_POWER, OUTPUT);

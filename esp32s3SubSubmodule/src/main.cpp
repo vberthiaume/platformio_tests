@@ -14,7 +14,7 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
 
 #if USE_SUB_MODULES
 A a;
-B b;
+// B b;
 #endif
 
 // the setup routine runs once when you press reset:
@@ -64,7 +64,7 @@ void loop()
     pixels.show();
 #if USE_SUB_MODULES
     Serial.println(a.doStuff());
-    Serial.println(b.doStuff());
+    // Serial.println(b.doStuff());
 #else
     Serial.println(".");
 #endif
