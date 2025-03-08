@@ -1,48 +1,47 @@
-#include "SPIFFS.h"
+#include "LittleFS.h"
 
-String fileContent;
-#include <iostream>
+String fileContent = ""; // Global string to store file content
+
+int led = LED_BUILTIN;
 
 void setup()
 {
-  Serial.begin(115200);
-  delay(10000);
+  pinMode(led, OUTPUT);
 
-  Serial.println("delay done, attempting to begin spiffs");
-  if (!SPIFFS.begin())
+  Serial.begin(115200);
+  delay(10000); // wait for 10 seconds
+
+  Serial.println("attempting to begin little fs");
+  if (!LittleFS.begin(true))
   {
-    Serial.println("SPIFFS.begin() failed");
+    Serial.println("An Error has occurred while mounting LittleFS");
     return;
   }
-  else
-  {
-    Serial.println("SPIFFS.begin() success");
-  }
 
-  File file = SPIFFS.open("/text.txt");
+  File file = LittleFS.open("/text.txt", "r");
   if (!file)
   {
-    Serial.println("Failed to open text.txt");
+    Serial.println("Failed to open file for reading");
     return;
   }
-  else
-    Serial.println("text.txt opened");
 
+  Serial.println("Reading file content...");
   while (file.available())
     fileContent += (char)file.read();
 
-  Serial.println("closing file");
   file.close();
-
-  Serial.println("all done");
 }
 
 void loop()
 {
   if (!fileContent.isEmpty())
-    Serial.println(fileContent);
+    Serial.println("file contains: " + fileContent);
   else
     Serial.println("could not read file");
 
-  delay(1000);
+  //blink the led
+  digitalWrite(led, HIGH);
+  delay(500);
+  digitalWrite(led, LOW);
+  delay(500);
 }
