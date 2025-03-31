@@ -41,7 +41,7 @@ void loop()
 
   //blink the led
   digitalWrite(led, HIGH);
-  delay(500);
+  delay(1000);
   digitalWrite(led, LOW);
   delay(500);
 }
