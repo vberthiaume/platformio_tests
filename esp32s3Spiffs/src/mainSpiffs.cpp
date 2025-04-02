@@ -11,9 +11,13 @@ void setup()
   pinMode(led, OUTPUT);
 
   Serial.begin(115200);
-  delay(10000); // wait for 10 seconds
+  delay(5000); // wait for 1 seconds
 
-  if (!SPIFFS.begin())
+  if (SPIFFS.begin())
+  {
+    Serial.println("Mounting SPIFFS succeeded!");
+  }
+  else
   {
     // std::cout << "An Error has occurred while mounting SPIFFS, printed using std::cout" << std::endl;
     Serial.println("An Error has occurred while mounting SPIFFS");
@@ -36,9 +40,9 @@ void setup()
 void loop()
 {
   if (!fileContent.isEmpty())
-    Serial.println("file contains: " + fileContent);
+    Serial.println("SPIFFS: file contains: " + fileContent);
   else
-    Serial.println("could not read file");
+    Serial.println("SPIFFS: could not read file");
 
   // blink the led
   digitalWrite(led, HIGH);
