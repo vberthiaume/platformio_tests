@@ -13,6 +13,8 @@ void setup()
   Serial.begin(115200);
   delay(5000); // wait for 1 seconds
 
+  Serial.println("\n\n\n=============================================================");
+
   if (SPIFFS.begin())
   {
     Serial.println("Mounting SPIFFS succeeded!");
